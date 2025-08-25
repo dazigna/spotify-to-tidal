@@ -1,0 +1,16 @@
+[project]
+name = "spotify-to-tidal"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "ada-url>=1.26.0",
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "pydantic>=2.11.7",
+    "python-dotenv>=1.1.1",
+]
+
+[dependency-groups]
+dev = ["basedpyright>=1.31.3", "ruff>=0.12.10"]
