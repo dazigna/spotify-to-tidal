@@ -47,7 +47,7 @@ uv run main.py
 ```env
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-SPOTIFY_REDIRECT_URI=http://localhost:3000/auth/spotify/callback
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/auth/spotify/callback
 ```
 
 ### Tidal Configuration
@@ -59,7 +59,7 @@ SPOTIFY_REDIRECT_URI=http://localhost:3000/auth/spotify/callback
 ```env
 TIDAL_CLIENT_ID=your_tidal_client_id
 TIDAL_CLIENT_SECRET=your_tidal_client_secret
-TIDAL_REDIRECT_URI=http://localhost:3000/auth/tidal/callback
+TIDAL_REDIRECT_URI=http://127.0.0.1:3000/auth/tidal/callback
 ```
 
 ## Running the Application
@@ -124,7 +124,7 @@ uv run main.py
 ```
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-SPOTIFY_REDIRECT_URI=http://localhost:3000/auth/spotify/callback
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/auth/spotify/callback
 ```
 
 ### Tidal Configuration
@@ -136,7 +136,7 @@ SPOTIFY_REDIRECT_URI=http://localhost:3000/auth/spotify/callback
 ```
 TIDAL_CLIENT_ID=your_tidal_client_id
 TIDAL_CLIENT_SECRET=your_tidal_client_secret
-TIDAL_REDIRECT_URI=http://localhost:3000/auth/tidal/callback
+TIDAL_REDIRECT_URI=http://127.0.0.1:3000/auth/tidal/callback
 ```
 
 ## Running the Application

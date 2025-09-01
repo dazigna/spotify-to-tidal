@@ -12,13 +12,24 @@ from spotify.models import (
 
 from common.config_manager import ConfigManager
 from common.network_manager import NetworkManager
+from common.storage import Storage
 
 
 class Authenticator:
-    def __init__(self, config_manager: ConfigManager, network_manager: NetworkManager):
+    def __init__(
+        self,
+        config_manager: ConfigManager,
+        network_manager: NetworkManager,
+        storage: Storage,
+    ):
         self.config_manager: ConfigManager = config_manager
         self.network_manager: NetworkManager = network_manager
-        self.state: str = secrets.token_hex()
+        self.storage: Storage = storage
+
+        self.state = self.storage.get("auth_state")
+        if not self.state:
+            self.state: str = secrets.token_hex()
+            self.storage.save("auth_state", self.state)
 
     def request_user_authorization(self):
         logger.info(f"Firing request for endpoint {SpotifyEndpoints.authorize_url}")
@@ -30,12 +41,16 @@ class Authenticator:
             "redirect_uri": self.config_manager.redirect_url,
             "state": self.state,
         }
-        logger.info(f"Firing request for endpoint {SpotifyEndpoints.authorize_url}")
-        _ = self.network_manager.get(SpotifyEndpoints.authorize_url, params=params)
+        request = self.network_manager.build_request(
+            "GET", SpotifyEndpoints.authorize_url, params=params
+        )
+        logger.info(f"Please visit: {request.url}")
 
     def request_access_token(self, code: str, state: str) -> SpotifyTokenResponse:
         if state != self.state:
-            raise ValueError("State values are different - tampering alert")
+            raise ValueError(
+                f"State values are different - tampering alert : current_state {self.state}, received state {state}"
+            )
         params = {
             "grant_type": "authorization_code",
             "code": code,
@@ -56,6 +71,7 @@ class Authenticator:
         auth_result: SpotifyTokenResponse = SpotifyTokenResponse.model_validate(
             response.json()
         )
+        self.storage.save("spotify_auth", auth_result.model_dump_json())
         return auth_result
 
     def basic_authenticate(self) -> SpotifyAuthenticationResponse:

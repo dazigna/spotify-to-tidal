@@ -1,7 +1,7 @@
 import httpx
 from loguru import logger
 from yarl import URL
-from typing import Any
+from typing import Any, Literal
 from collections import defaultdict
 
 
@@ -23,20 +23,25 @@ class NetworkManager:
         logger.info(response.json())
         return response
 
+    def build_request(
+        self,
+        method: Literal["GET", "POST"],
+        endpoint: URL,
+        headers: dict[str, str] | None = None,
+        params: dict[str, str] | None = None,
+    ) -> httpx.Request:
+        return self.client.build_request(
+            method, str(endpoint), headers=headers, params=params
+        )
+
     def get(
         self,
         endpoint: URL,
         headers: dict[str, str] | None = None,
         params: dict[str, str] | None = None,
     ) -> httpx.Response:
-        logger.info(f"GET: {endpoint}")
-        try:
-            response: httpx.Response = self.client.get(
-                str(endpoint), headers=headers, params=params
-            ).raise_for_status()
-            return response
-        except httpx.HTTPStatusError as e:
-            logger.error(f"Error: {e}")
-            if e.response.status_code == 303:
-                logger.info(f"Redirecting to {e.response.headers['location']}")
-                return e.response
+        logger.info(f"GET: {endpoint}, params: {params}")
+        response: httpx.Response = self.client.get(
+            str(endpoint), headers=headers, params=params
+        ).raise_for_status()
+        return response

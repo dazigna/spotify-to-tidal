@@ -32,13 +32,15 @@ def config_manager_factory() -> ConfigManager:
 
 
 class ServerThread(Thread):
-    def __init__(self):
+    def __init__(self, storage: Storage):
         super().__init__()
         logger.info("Creation server thread")
         config_manager: ConfigManager = config_manager_factory()
         network_manager: NetworkManager = NetworkManager()
         self.auth_server: SimpleAuthServer = SimpleAuthServer(
-            config_manager=config_manager, network_manager=network_manager
+            config_manager=config_manager,
+            network_manager=network_manager,
+            storage=storage,
         )
 
     @override
@@ -53,28 +55,28 @@ class ServerThread(Thread):
         logger.info("Server has been shut down.")
 
 
-def start_server_in_background():
-    server_thread = ServerThread()
+def start_server_in_background(storage: Storage):
+    server_thread = ServerThread(storage=storage)
     server_thread.start()
     return server_thread
 
 
 def main():
+    storage: Storage = Storage()
     logger.info("Starting")
-    server_thread: Thread = start_server_in_background()
+    server_thread: Thread = start_server_in_background(storage=storage)
 
     logger.info("Server has started - ready")
 
     try:
-        # while True:
-        #     logger.info("running main loop")
-        #     sleep(1)
         config_manager: ConfigManager = config_manager_factory()
 
         network_manager: NetworkManager = NetworkManager()
-        _storage: Storage = Storage()
+
         authenticator = Authenticator(
-            config_manager=config_manager, network_manager=network_manager
+            config_manager=config_manager,
+            network_manager=network_manager,
+            storage=storage,
         )
 
         authenticator.request_user_authorization()
