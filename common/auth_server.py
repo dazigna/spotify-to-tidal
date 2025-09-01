@@ -1,6 +1,9 @@
+from ssl import SSLContext
+from multidict._multidict_py import MultiDictProxy
+
 from http.server import HTTPServer
 
-from ada_url import parse_search_params
+from yarl import URL
 from http import server
 from loguru import logger
 from common.config_manager import ConfigManager
@@ -27,10 +30,10 @@ class SimpleServerRequestHandler(server.BaseHTTPRequestHandler):
         #     url = URL(self.path)
         # except ValueError:
         #     print(f"{self.path=}")
-
-        if self.path == "auth/spotify/callback":
+        url = URL(self.path)
+        if url.path == "auth/spotify/callback":
             # TODO: Fix this - ada library seems shit.
-            params = parse_search_params(url.search)
+            params: MultiDictProxy[str] = url.query
             auth_code: str | None = params.get("code", [None])[0]
             state: str | None = params.get("state", [None])[0]
             error: str | None = params.get("error", [None])[0]
@@ -80,7 +83,15 @@ class SimpleAuthServer:
             kwargs["network_manager"] = self.network_manager
             return SimpleServerRequestHandler(*args, **kwargs)
 
+        # Create an SSL context
+        self.context: SSLContext = SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        self.context.load_cert_chain(config_manager.cert_file, config_manager.key_file)
+
         self.httpd: HTTPServer = server.HTTPServer(self.server_address, handler)
+        # Wrap the socket with the SSL context
+        self.httpd.socket = self.context.wrap_socket(
+            self.httpd.socket, server_side=True
+        )
 
     def serve(self):
         self.httpd.serve_forever()

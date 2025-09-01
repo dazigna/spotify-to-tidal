@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, computed_field
-from ada_url import URL
+from yarl import URL
 from enum import StrEnum
 
 

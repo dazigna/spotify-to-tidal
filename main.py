@@ -25,6 +25,8 @@ def config_manager_factory() -> ConfigManager:
         client_id=env_config["spotify_client_id"],
         client_secret=env_config["spotify_client_secret"],
         redirect_url=env_config["spotify_redirect_url"],
+        cert_file=env_config["cert_file_path"],
+        key_file=env_config["key_file_path"],
     )
     return config_manager
 
@@ -64,18 +66,18 @@ def main():
     logger.info("Server has started - ready")
 
     try:
-        while True:
-            logger.info("running main loop")
-            sleep(1)
-        # config_manager: ConfigManager = config_manager_factory()
+        # while True:
+        #     logger.info("running main loop")
+        #     sleep(1)
+        config_manager: ConfigManager = config_manager_factory()
 
-        # network_manager: NetworkManager = NetworkManager()
-        # _storage: Storage = Storage()
-        # authenticator = Authenticator(
-        #     config_manager=config_manager, network_manager=network_manager
-        # )
+        network_manager: NetworkManager = NetworkManager()
+        _storage: Storage = Storage()
+        authenticator = Authenticator(
+            config_manager=config_manager, network_manager=network_manager
+        )
 
-        # authenticator.request_user_authorization()
+        authenticator.request_user_authorization()
 
     except KeyboardInterrupt:
         logger.info("shutting down")

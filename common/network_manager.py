@@ -1,6 +1,6 @@
 import httpx
 from loguru import logger
-from ada_url import URL
+from yarl import URL
 from typing import Any
 from collections import defaultdict
 
@@ -30,8 +30,13 @@ class NetworkManager:
         params: dict[str, str] | None = None,
     ) -> httpx.Response:
         logger.info(f"GET: {endpoint}")
-        response: httpx.Response = self.client.get(
-            str(endpoint), headers=headers, params=params
-        ).raise_for_status()
-        logger.info(f"{response.json()}")
-        return response
+        try:
+            response: httpx.Response = self.client.get(
+                str(endpoint), headers=headers, params=params
+            ).raise_for_status()
+            return response
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Error: {e}")
+            if e.response.status_code == 303:
+                logger.info(f"Redirecting to {e.response.headers['location']}")
+                return e.response
