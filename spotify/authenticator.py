@@ -25,6 +25,7 @@ class Authenticator:
         self.config_manager: ConfigManager = config_manager
         self.network_manager: NetworkManager = network_manager
         self.storage: Storage = storage
+        self.storage_key: str = "spotify_auth"
 
         self.state = self.storage.get("auth_state")
         if not self.state:
@@ -32,6 +33,10 @@ class Authenticator:
             self.storage.save("auth_state", self.state)
 
     def request_user_authorization(self):
+        if self.storage.get(self.storage_key):
+            logger.info("already authenticated")
+            return
+
         logger.info(f"Firing request for endpoint {SpotifyEndpoints.authorize_url}")
         scope: str = SpotifyAuthScopes.playlist_read_private
         params: dict[str, str] = {
@@ -71,7 +76,7 @@ class Authenticator:
         auth_result: SpotifyTokenResponse = SpotifyTokenResponse.model_validate(
             response.json()
         )
-        self.storage.save("spotify_auth", auth_result.model_dump_json())
+        self.storage.save(self.storage_key, auth_result.model_dump_json())
         return auth_result
 
     def basic_authenticate(self) -> SpotifyAuthenticationResponse:

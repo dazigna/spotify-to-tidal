@@ -19,6 +19,11 @@ class SpotifyTokenResponse(BaseModel):
     expires_in: int
     refresh_token: str
 
+    @computed_field
+    @property
+    def header(self) -> dict[str, str]:
+        return {"Authorization": f"{self.token_type} {self.access_token}"}
+
 
 class SpotifyAuthenticationResponse(BaseModel):
     access_token: str

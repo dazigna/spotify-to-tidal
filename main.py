@@ -4,7 +4,7 @@
 
 from threading import Thread
 
-from time import sleep
+from pathlib import Path
 from typing import override
 
 from loguru import logger
@@ -62,7 +62,7 @@ def start_server_in_background(storage: Storage):
 
 
 def main():
-    storage: Storage = Storage()
+    storage: Storage = Storage(root_dir=Path().cwd())
     logger.info("Starting")
     server_thread: Thread = start_server_in_background(storage=storage)
 
@@ -80,6 +80,13 @@ def main():
         )
 
         authenticator.request_user_authorization()
+
+        fetcher: Fetcher = Fetcher(
+            config_manager=config_manager_factory(),
+            network_manager=network_manager,
+            storage=storage,
+        )
+        fetcher.fetch()
 
     except KeyboardInterrupt:
         logger.info("shutting down")
