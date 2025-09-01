@@ -21,6 +21,7 @@ class Authenticator:
         self.state: str = secrets.token_hex()
 
     def request_user_authorization(self):
+        logger.info(f"Firing request for endpoint {SpotifyEndpoints.authorize_url}")
         scope: str = SpotifyAuthScopes.playlist_read_private
         params: dict[str, str] = {
             "response_type": "code",
@@ -29,6 +30,7 @@ class Authenticator:
             "redirect_uri": self.config_manager.redirect_url,
             "state": self.state,
         }
+        logger.info(f"Firing request for endpoint {SpotifyEndpoints.authorize_url}")
         _ = self.network_manager.get(SpotifyEndpoints.authorize_url, params=params)
 
     def request_access_token(self, code: str, state: str) -> SpotifyTokenResponse:
@@ -56,7 +58,7 @@ class Authenticator:
         )
         return auth_result
 
-    def authenticate(self) -> SpotifyAuthenticationResponse:
+    def basic_authenticate(self) -> SpotifyAuthenticationResponse:
         logger.info("Authenticating to Spotify")
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         body = {

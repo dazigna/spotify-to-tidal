@@ -1,6 +1,3 @@
-from httpx._client import Client
-
-
 import httpx
 from loguru import logger
 from ada_url import URL
@@ -36,4 +33,5 @@ class NetworkManager:
         response: httpx.Response = self.client.get(
             str(endpoint), headers=headers, params=params
         ).raise_for_status()
+        logger.info(f"{response.json()}")
         return response

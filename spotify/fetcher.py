@@ -32,6 +32,6 @@ class Fetcher:
         return response
 
     def fetch(self):
-        self.auth_params = self.authenticate()
+        self.auth_params = self.authenticator.authenticate()
         playlists = self.fetch_playlists()
         self.storage.save("playlist", playlists)
