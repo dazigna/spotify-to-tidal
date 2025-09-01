@@ -9,3 +9,38 @@ wheels/
 # Virtual environments
 .venv
 .env
+.env.local
+.env.*.local
+
+# Python certificates and keys
+*.pem
+*.key
+*.crt
+*.csr
+
+# Python data files
+*.csv
+*.json
+*.xml
+*.yaml
+*.yml
+
+# Python logs
+*.log
+
+# Python byte-compiled files
+*.pyc
+
+# Python test files
+*.py.test
+*.pytest_cache/
+
+# Python IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python package files
+Pipfile.lock
+poetry.lock
